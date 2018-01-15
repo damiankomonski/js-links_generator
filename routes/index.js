@@ -57,14 +57,31 @@ router.post('/insert-visitedLink', function(req, res, next) {
   mongo.connect(url, function(err, db) {
     assert.equal(null, err);
 
-    db.collection('visited-links').insertOne(item, function(err, result){
+    db.collection('links-visited').insertOne(item, function(err, result){
       assert.equal(null, err);
-      console.log('Visited link inserted!');
+      console.log('Item inserted!');
       db.close();
     });
   })
 
   res.redirect('/');
+});
+
+router.get('/check-visitedLink', function(req, res, next) {
+  var resultArray = [];
+  mongo.connect(url, function(err, db) {
+    assert.equal(null, err);
+    var cursor = db.collection('links-visited').find({"link": req.query.link});
+    cursor.forEach(function(doc, err) {
+      assert.equal(null, err);
+      resultArray.push(doc);
+    }, function() {
+      db.close();
+      console.log(resultArray);
+      res.send(resultArray);
+    });
+
+  });
 });
 
 

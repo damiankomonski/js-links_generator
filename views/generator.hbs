@@ -2,8 +2,10 @@
     <h3>Type site address</h3>
     <form id="generator-form" action="/generator" method="post">
         <div class="form-group">
-            <input type="name" class="form-control" id="address" name="address" placeholder="http://www.bbc.com/">
-            <small id="emailHelp" class="form-text text-muted">Must start from http://</small>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon3">http://www.</span>
+            <input type="text" class="form-control" id="address" name="address" aria-describedby="basic-addon3">
+          </div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

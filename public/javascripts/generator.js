@@ -1,17 +1,26 @@
 var codeText = document.querySelector('#site-code').innerText,
     regexp = /<a[\s]+([^>]+)>((?:.(?!\<\/a\>))*.)<\/a>/g,
     result = codeText.match(regexp),
-    address = document.querySelector("#site-address").innerText,
+    address = document.querySelector("#site-address").innerText.slice(11),
     internalLinks = [],
     externalLinks = [],
     externalLinksDOM = document.querySelector('#external-links'),
     internalLinksDOM = document.querySelector('#internal-links'),
     generatorForm = document.querySelector('#generator-form'),
     codeTextDOM = document.getElementById('site-code-dom'),
-    linksDOMArray,
-    inputAddressDOM = document.createElement('a');
+    linksDOMArray;
 
-inputAddressDOM.href = address;
+function sendLinkToDB(link) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log('Zapisano w bazie!');
+    }
+  };
+  xhttp.open("POST", "/insert-link", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send("link=" + link);
+}
 
 result.forEach(function(element){
     codeTextDOM.innerHTML += element;
@@ -20,7 +29,9 @@ result.forEach(function(element){
 linksDOMArray = codeTextDOM.querySelectorAll('a');
 
 linksDOMArray.forEach(function (element) {
-    if (element.hostname === inputAddressDOM.hostname) {
+    sendLinkToDB(element.href);
+
+    if (element.hostname.indexOf(address) !== -1) {
         internalLinks.push(element);
     } else {
         externalLinks.push(element);
@@ -31,8 +42,6 @@ linksDOMArray.forEach(function (element) {
 internalLinks.forEach(function (element) {
     var li = document.createElement("li");
     li.innerHTML = element;
-    console.log(element);
-    console.log(li);
     internalLinksDOM.appendChild(li);
 });
 
@@ -47,9 +56,9 @@ externalLinks.forEach(function (element) {
 //Checking Form
 function addhttp(url) {
     if (!/^(f|ht)tps?:\/\//i.test(url)) {
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 generatorForm.addEventListener("submit", function (e) {
